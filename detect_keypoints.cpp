@@ -40,31 +40,30 @@ void detKeypoints1()
     }
 
     // visualize results
-    cv::Mat visImage1 = img.clone();
-    cv::drawKeypoints(img, kptsShiTomasi, visImage1, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-    string windowName1 = "Shi-Tomasi Results";
-    cv::namedWindow(windowName1, 1);
-    imshow(windowName1, visImage1);
-    cv::waitKey(0);
+    cv::Mat visImage = img.clone();
+    cv::drawKeypoints(img, kptsShiTomasi, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    string windowName = "Shi-Tomasi Results";
+    cv::namedWindow(windowName, 1);
+    imshow(windowName, visImage);
 
-    // FAST detector
-    int threshold = 30; // difference between intensity of the central pixel and pixels of a circle around this pixel
-    bool useNonMaxSuppression = true;
+    int threshold = 30;                                                              // difference between intensity of the central pixel and pixels of a circle around this pixel
+    bool bNMS = true;                                                                // perform non-maxima suppression on keypoints
+    cv::FastFeatureDetector::DetectorType type = cv::FastFeatureDetector::TYPE_9_16; // TYPE_9_16, TYPE_7_12, TYPE_5_8
+    cv::Ptr<cv::FeatureDetector> detector = cv::FastFeatureDetector::create(threshold, bNMS, type);
 
-    cv::Ptr<cv::FastFeatureDetector> fastDetector = cv::FastFeatureDetector::create(threshold, useNonMaxSuppression, cv::FastFeatureDetector::TYPE_9_16);
-
-    vector<cv::KeyPoint> kptsFast;
+    vector<cv::KeyPoint> kptsFAST;
     t = (double)cv::getTickCount();
-    fastDetector->detect(imgGray, kptsFast);
+    detector->detect(imgGray, kptsFAST);
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
-    cout << "FAST with n= " << kptsFast.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+    cout << "FAST with n= " << kptsFAST.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
 
-    cv::Mat visImage2 = img.clone();
-    cv::drawKeypoints(img, kptsFast, visImage2, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-    string windowName2 = "FAST Results";
-    cv::namedWindow(windowName2, 1);
-    imshow(windowName2, visImage2);
+    visImage = img.clone();
+    cv::drawKeypoints(img, kptsFAST, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    windowName = "FAST Results";
+    cv::namedWindow(windowName, 2);
+    imshow(windowName, visImage);
     cv::waitKey(0);
+
 }
 
 int main()
